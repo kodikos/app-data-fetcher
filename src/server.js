@@ -4,7 +4,10 @@ function serve(port) {
     const app = express();
 
     app.use((req, res) => {
-        res.send(`<html><body><div>Path: ${req.originalUrl}</div><div>Time: ${(new Date()).toISOString()}</div></body></html>`);
+        res.send({
+            path: req.originalUrl,
+            time: (new Date()).toISOString()
+        });
     });
 
     app.listen(port, () => {
