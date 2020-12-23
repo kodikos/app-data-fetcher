@@ -3,10 +3,12 @@ import './App.css';
 
 function ContentFetcher({ prefix, setPrefix })  {
   const [ content, setContent ] = useState({ path: 'N/A', time: 'N/A'});
+  const [ timeToRefresh, setTTR ] = useState(Date.now());
 
   useEffect(() => {
+    console.log(`loading... ${prefix.url}`);
     async function fetchData() {
-      const response = await fetch(`http://localhost:3020${prefix}`, {
+      const response = await fetch(`http://localhost:3020${prefix.url}`, {
         method: 'POST',
         mode: 'cors'
       });
@@ -14,24 +16,30 @@ function ContentFetcher({ prefix, setPrefix })  {
       setContent(body);
     }
     fetchData();
-  }, [prefix]);
+  }, [prefix, timeToRefresh]);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setTTR(Date.now()), prefix.refresh * 1000);
+    return () => clearTimeout(timer);
+  }, [timeToRefresh, prefix]);
 
   return (
     <main>
       <div>Path:</div><div>{content.path}</div>
       <div>Time:</div><div>{content.time}</div>
       <div>Also see:</div>
-      <div><button onClick={() => setPrefix(content.nextUrl)}>{content.nextUrl}</button></div>
+      <div><button onClick={() => setPrefix({ ...prefix, url: content.nextUrl })}>{content.nextUrl}</button></div>
     </main>
   );
 }
 
 function SettingsForm({ onChange, prefix }) {
-  const [ fieldPrefix, setFieldPrefix ] = useState(prefix);
-  const [ fieldRefresh, setFieldRefresh ]  = useState(30);
+  const [ fieldPrefix, setFieldPrefix ] = useState(prefix.url);
+  const [ fieldRefresh, setFieldRefresh ]  = useState(prefix.refresh);
 
   useEffect(() => {
-    setFieldPrefix(prefix);
+    setFieldPrefix(prefix.url);
+    setFieldRefresh(prefix.refresh);
   }, [prefix]);
 
   return <form onSubmit={(e) => e.preventDefault()}>
@@ -58,14 +66,14 @@ function SettingsForm({ onChange, prefix }) {
       </div>
     </div>
     <button onClick={() => {
-      onChange(fieldPrefix, fieldRefresh);
+      onChange({ url: fieldPrefix, refresh: fieldRefresh });
     }}>Go!</button>
   </form>;
 }
 
 function App() {
 
-  const [ prefix, setPrefix ] = useState("/initial");
+  const [ prefix, setPrefix ] = useState({ url: "/initial", refresh: 5 });
 
   return (
     <div className="App">
