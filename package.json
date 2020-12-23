@@ -1,7 +1,8 @@
 {
-  "name": "20201215_app_datafetch",
+  "name": "app-data-fetcher",
+  "description": "Data fetching in an app context",
   "version": "0.1.0",
-  "private": true,
+  "private": false,
   "dependencies": {
     "@testing-library/jest-dom": "^5.11.6",
     "@testing-library/react": "^11.2.2",
