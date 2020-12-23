@@ -17,25 +17,48 @@ function ContentFetcher({ prefix, setPrefix })  {
   }, [prefix]);
 
   return (
-    <>
-      <div>Path: {content.path}</div>
-      <div>Time: {content.time}</div>
-      <div>Also see: <button onClick={() => setPrefix(content.nextUrl)}>{content.nextUrl}</button></div>
-    </>
+    <main>
+      <div>Path:</div><div>{content.path}</div>
+      <div>Time:</div><div>{content.time}</div>
+      <div>Also see:</div>
+      <div><button onClick={() => setPrefix(content.nextUrl)}>{content.nextUrl}</button></div>
+    </main>
   );
 }
 
 function SettingsForm({ onChange, prefix }) {
   const [ fieldPrefix, setFieldPrefix ] = useState(prefix);
+  const [ fieldRefresh, setFieldRefresh ]  = useState(30);
 
   useEffect(() => {
     setFieldPrefix(prefix);
   }, [prefix]);
 
   return <form onSubmit={(e) => e.preventDefault()}>
-    <label>Prefix <input type="text" value={fieldPrefix} onChange={(e) => setFieldPrefix(e.target.value)} /></label>
+    <div>
+      <div className="prefixField">
+        <label>Prefix 
+          <input 
+            type="text" 
+            value={fieldPrefix} 
+            onChange={(e) => setFieldPrefix(e.target.value)}
+          />
+        </label>
+      </div>
+      <div>
+        <label>Refresh every
+          <input
+            className="refresh"
+            type="text" 
+            value={fieldRefresh} 
+            onChange={(e) => setFieldRefresh(e.target.value)}
+          />
+          seconds
+        </label>
+      </div>
+    </div>
     <button onClick={() => {
-      onChange(fieldPrefix);
+      onChange(fieldPrefix, fieldRefresh);
     }}>Go!</button>
   </form>;
 }

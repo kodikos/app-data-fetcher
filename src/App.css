@@ -1,1 +1,93 @@
 body,  html { margin: 10px }
+
+main {
+    padding: 12px;
+}
+
+button {
+    padding: 0px;
+    cursor: pointer;
+}
+
+main button {
+    border: 0px;
+    background: 0px;
+    font-size: inherit;
+    text-decoration: underline;
+    color: #0000FF;
+}
+
+main > *:nth-child(odd) {
+    font-weight: bold;
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+    background: #eed2af;
+    border: 2px solid #333;
+    border-radius: 5px;
+    padding: 10px;
+    line-height: 2em;
+}
+
+form input, form button {
+    border: 1px solid #333;
+    border-radius: 6px;
+    padding: 1px 5px;
+    background: #FFF;
+    font-size: inherit;
+}
+
+form input {
+    margin: 0px 5px;
+    min-width: 3em;
+}
+
+form input.refresh {
+    width: 3em;
+}
+
+form .prefixField label {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+
+form button {
+    font-weight: bolder;
+    padding-left: 10px;
+    padding-right: 10px;
+    width: 100%;
+}
+
+@media (min-width: 400px) {
+    form {
+        flex-direction: row;
+        flex-wrap: wrap;
+    }
+
+    form > div {
+        flex-grow: 1;
+    }
+
+    form .prefixField label {
+        display: flex;
+        flex-direction: row;
+        width: 100%;
+    }
+    
+    form .prefixField label input {
+        flex-grow: 1;
+    }
+
+    form button {
+        width: auto;
+    }
+
+    main {
+        display: grid;
+        grid-template-columns: max-content auto;
+        gap: 0px 1em;
+    }
+}
