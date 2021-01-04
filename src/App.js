@@ -1,6 +1,26 @@
 import { useState, useEffect } from 'react';
 import './App.css';
 
+function useOnlyWhenBrowserFocused() {
+  const [ tabActive, setTabActive]  = useState(true);
+
+  const onFocus = () => setTabActive(true);
+  const onBlur = () => setTabActive(false);
+
+  useEffect(() => {
+    if (window){
+      window.addEventListener('focus', onFocus);
+      window.addEventListener('blur', onBlur);
+    }
+    return () => {
+      window.removeEventListener('focus', onFocus);
+      window.removeEventListener('blur', onBlur);
+    }
+  }, []);
+
+  return tabActive;
+}
+
 function useIntervalUpdater(refreshTime, otherResetData) {
   const [ timeToRefresh, setTTR ] = useState(Date.now());
 
@@ -33,9 +53,11 @@ function useContentFetcher(url, otherResetData) {
 } 
 
 function ContentFetcher({ prefix, setPrefix })  {
+  const tabActive = useOnlyWhenBrowserFocused();
   const timeToRefresh = useIntervalUpdater(prefix.refresh, prefix);
-  const content = useContentFetcher(prefix.url, timeToRefresh);
+  const content = useContentFetcher(prefix.url, tabActive ? timeToRefresh : 0);
 
+  if (!content) return null;
   return (
     <main>
       <div>Path:</div><div>{content.path}</div>
