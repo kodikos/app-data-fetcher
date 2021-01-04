@@ -19,6 +19,7 @@ function ContentFetcher({ prefix, setPrefix })  {
   }, [prefix, timeToRefresh]);
 
   useEffect(() => {
+    if (prefix.refresh <= 0) return;
     const timer = setTimeout(() => setTTR(Date.now()), prefix.refresh * 1000);
     return () => clearTimeout(timer);
   }, [timeToRefresh, prefix]);
