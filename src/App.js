@@ -1,14 +1,25 @@
 import { useState, useEffect } from 'react';
 import './App.css';
 
-function ContentFetcher({ prefix, setPrefix })  {
-  const [ content, setContent ] = useState({ path: 'N/A', time: 'N/A'});
+function useIntervalUpdater(refreshTime, otherResetData) {
   const [ timeToRefresh, setTTR ] = useState(Date.now());
 
   useEffect(() => {
-    console.log(`loading... ${prefix.url}`);
+    if (refreshTime <= 0) return;
+    const timer = setTimeout(() => setTTR(Date.now()), refreshTime * 1000);
+    return () => clearTimeout(timer);
+  }, [timeToRefresh, refreshTime, otherResetData]);
+
+  return timeToRefresh;
+}
+
+function useContentFetcher(url, otherResetData) {
+  const [ content, setContent ] = useState({ path: 'N/A', time: 'N/A'});
+
+  useEffect(() => {
+    console.log(`loading... ${url}`);
     async function fetchData() {
-      const response = await fetch(`http://localhost:3020${prefix.url}`, {
+      const response = await fetch(`http://localhost:3020${url}`, {
         method: 'POST',
         mode: 'cors'
       });
@@ -16,13 +27,14 @@ function ContentFetcher({ prefix, setPrefix })  {
       setContent(body);
     }
     fetchData();
-  }, [prefix, timeToRefresh]);
+  }, [url, otherResetData]);
 
-  useEffect(() => {
-    if (prefix.refresh <= 0) return;
-    const timer = setTimeout(() => setTTR(Date.now()), prefix.refresh * 1000);
-    return () => clearTimeout(timer);
-  }, [timeToRefresh, prefix]);
+  return content;
+} 
+
+function ContentFetcher({ prefix, setPrefix })  {
+  const timeToRefresh = useIntervalUpdater(prefix.refresh, prefix);
+  const content = useContentFetcher(prefix.url, timeToRefresh);
 
   return (
     <main>
