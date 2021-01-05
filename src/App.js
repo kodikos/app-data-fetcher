@@ -33,13 +33,16 @@ function useIntervalUpdater(refreshTime, otherResetData) {
   return timeToRefresh;
 }
 
-function useContentFetcher(url, otherResetData) {
+function useContentFetcher(prefix) {
+  const tabActive = useOnlyWhenBrowserFocused();
   const [ content, setContent ] = useState({ path: 'N/A', time: 'N/A'});
+  const timeToRefresh = useIntervalUpdater(prefix.refresh, prefix);
 
   useEffect(() => {
-    console.log(`loading... ${url}`);
+    if (!tabActive) return;
+    console.log(`loading... ${prefix.url}`);
     async function fetchData() {
-      const response = await fetch(`http://localhost:3020${url}`, {
+      const response = await fetch(`http://localhost:3020${prefix.url}`, {
         method: 'POST',
         mode: 'cors'
       });
@@ -47,15 +50,13 @@ function useContentFetcher(url, otherResetData) {
       setContent(body);
     }
     fetchData();
-  }, [url, otherResetData]);
+  }, [prefix, timeToRefresh]);
 
   return content;
 } 
 
 function ContentFetcher({ prefix, setPrefix })  {
-  const tabActive = useOnlyWhenBrowserFocused();
-  const timeToRefresh = useIntervalUpdater(prefix.refresh, prefix);
-  const content = useContentFetcher(prefix.url, tabActive ? timeToRefresh : 0);
+  const content = useContentFetcher(prefix);
 
   if (!content) return null;
   return (
